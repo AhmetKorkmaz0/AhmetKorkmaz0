@@ -1,0 +1,234 @@
+Aylık Yeni Kullanıcı Sayısı gösteren Script
+# Bugünün tarihini al
+$today = Get-Date
+
+# Ayin baslangıç tarihini belirle
+$firstDayOfMonth = Get-Date -Day 1 -Month $today.Month -Year $today.Year
+
+# Domaindeki kullanicilari al ve ayin baslangıç tarihiyle karsilastir
+$newUsers = Get-ADUser -Filter {Created -ge $firstDayOfMonth} -Properties Created
+
+# Eger yeni kullanici varsa sayisini göster, yoksa 0 olarak belirle
+if ($newUsers) {
+    $newUserCount = $newUsers.Count
+} else {
+    $newUserCount = 0
+}
+
+# Sonucu sadece sayi olarak göster
+$newUserCount
+----------------
+Aylik Eklenen PC detaylarını gösteren Script
+# Get today's date and display it
+$today = Get-Date
+Write-Host "Today's date: $($today.ToString('MM/dd/yyyy HH:mm:ss'))"
+
+# Show all computers in the domain
+Write-Host "All computers in the domain:"
+$computers = Get-ADComputer -Filter * -Properties whenCreated |
+    Select-Object Name, @{Name="CreatedDate"; Expression={$_.whenCreated.ToLocalTime()}} |
+    Where-Object { $_.CreatedDate -ge (Get-Date).AddDays(-30) } |
+    Sort-Object Name |
+    Format-Table -AutoSize
+
+# Display all results as a table
+$computers
+------------------------
+Aylik Pc Sayısını Gösteren Script
+# Bugünün tarihini al ve göster
+$today = Get-Date
+
+# Son 30 gün içinde eklenen bilgisayarlari say
+$startDate = (Get-Date).AddDays(-30).Date
+$endDate = (Get-Date).Date
+$computersCount = (Get-ADComputer -Filter {Created -ge $startDate -and Created -le $endDate} -Properties whenCreated | Measure-Object | Select-Object -ExpandProperty Count)
+
+# Sonucu sadece sayi olarak ver
+Write-Host "$computersCount"
+-------------------------------
+Total PC Detayını Gösteren Script
+# Domaindeki toplam bilgisayar sayisini al
+$totalComputers = Get-ADComputer -Filter * -Properties whenCreated |
+    Select-Object Name, @{Name="CreatedDate"; Expression={$_.whenCreated.ToLocalTime()}}
+
+# Sonuçlari tablo olarak göster
+$totalComputers | Format-Table -AutoSize
+------------------------------------------------
+Task Scheduled Fail alanları gösteren Script
+$file = "C:\Users\Administrator\Desktop\PowerShell\TaskScheduler\Failed.txt"
+if (Test-Path $file) {
+    Get-Content $file
+} else {
+    Write-Host "Dosya bulunamadı."
+}
+---------------------
+Aylik Eklenen User Detaylarını Gösteren Script
+# Ayin baslangiç tarihini al
+$firstDayOfMonth = Get-Date -Day 1
+
+# Domaindeki kullanicilari al ve ayin baslangiç tarihiyle karsilastir
+$newUsers = Get-ADUser -Filter {Created -ge $firstDayOfMonth} -Properties Created
+
+# Eger yeni kullanici varsa sayisini göster, yoksa 0 olarak belirle
+if ($newUsers) {
+    $newUserCount = $newUsers.Count
+    $newUserDetails = $newUsers | Select-Object Name, SamAccountName, Created
+} else {
+    $newUserCount = 0
+    $newUserDetails = @()
+}
+
+# Sonucu tablo olarak göster
+if ($newUserCount -gt 0) {
+    $newUserDetails | Format-Table
+} else {
+    Write-Host "Bu ay hiç yeni kullanici olusturulmadi."
+}
+
+# Sonucu sadece sayi olarak göster
+$newUserCount
+-------------------
+Domaine Bugün eklenen PC sayısını gösteren Script
+# Bugünün tarihini al ve göster
+$today = Get-Date
+
+# Bugün eklenen bilgisayarları say
+$today = (Get-Date).Date
+$todayComputersCount = (Get-ADComputer -Filter {Created -ge $today} -Properties whenCreated | Measure-Object | Select-Object -ExpandProperty Count)
+#sonucu sadece sayı olarak ver.
+Write-Host "$todayComputersCount"
+--------------------------------
+Task Scheduled Succes Saysını Gösteren Script
+$file = "C:\Users\Administrator\Desktop\PowerShell\TaskScheduler\Succes.txt"
+if (Test-Path $file) {
+    Get-Content $file
+} else {
+    Write-Host "Dosya bulunamadı."
+}
+---------------------------
+Task Scheduled takip edilen görevlerin detayını gösteren Script
+$file = "C:\Users\Administrator\Desktop\PowerShell\TaskScheduler\TaskScheduled.txt"
+if (Test-Path $file) {
+    Get-Content $file
+} else {
+    Write-Host "Dosya bulunamadı."
+}
+----------------------------------
+Domaine Bugün eklenen pclerin detayını gösteren Script
+# Get the current date and time
+$today = Get-Date
+
+# Display today's date in English format
+"Today's date: $($today.ToString('MM/dd/yyyy HH:mm:ss'))"
+
+# Display all computers in the domain
+"Computers in the domain:"
+$computers = Get-ADComputer -Filter * -Properties whenCreated |
+    Select-Object Name, @{Name="CreatedDate"; Expression={$_.whenCreated.ToLocalTime()}} |
+    Sort-Object Name |
+    Format-Table -AutoSize
+$computers
+
+# Display computers added today
+"Computers added today:"
+$today = (Get-Date).Date
+$todayComputers = Get-ADComputer -Filter {Created -ge $today} -Properties whenCreated |
+    Select-Object Name, @{Name="CreatedDate"; Expression={$_.whenCreated.ToLocalTime()}} |
+    Sort-Object Name |
+    Format-Table -AutoSize
+$todayComputers
+-----------------------
+Domainde bugün oluşturulan kullanıcıların detayını gösteren Script
+# Bugünün tarihini al
+$today = (Get-Date).Date
+
+# Domaindeki kullanıcıları al ve bugünün tarihiyle karşılaştır
+$newUsers = Get-ADUser -Filter {Created -ge $today} -Properties Created
+
+# Eğer yeni kullanıcı varsa sayısını göster, yoksa 0 olarak belirle
+if ($newUsers) {
+    $newUserCount = $newUsers.Count
+    $newUserDetails = $newUsers | Select-Object Name, SamAccountName, Created
+} else {
+    $newUserCount = 0
+    $newUserDetails = @()
+}
+
+# Sonucu tablo olarak göster
+if ($newUserCount -gt 0) {
+    $newUserDetails | Format-Table
+} else {
+    Write-Host "No new users were created today."
+}
+
+# Sonucu sadece sayı olarak göster
+$newUserCount
+----------------
+Domainde Bugün oluşturulan Kullanıcıların sayısını gösteren Script
+# Bugünün tarihini al
+$today = (Get-Date).Date
+
+# Domaindeki kullanıcıları al ve bugünün tarihiyle karşılaştır
+$newUsers = Get-ADUser -Filter {Created -ge $today} -Properties Created
+
+# Eğer yeni kullanıcı varsa sayısını göster, yoksa 0 olarak belirle
+if ($newUsers) {
+    $newUserCount = $newUsers.Count
+} else {
+    $newUserCount = 0
+}
+
+# Sonucu sadece sayı olarak göster
+$newUserCount
+----------------------------
+Domaindeki Total Users Detayını veren Script
+# Domain adini degiskene ata
+$domainName = "ahmetkorkmaz.local"
+
+# Domain'e baglan
+$domain = New-Object System.DirectoryServices.DirectoryEntry("LDAP://$domainName")
+$searcher = New-Object System.DirectoryServices.DirectorySearcher
+$searcher.SearchRoot = $domain
+$searcher.Filter = "(&(objectCategory=User))"
+$searcher.PageSize = 1000 # Sayfa boyutunu artirabilirsiniz
+
+# Kullanicilari ara ve detaylarini al
+$users = $searcher.FindAll()
+
+# Sonucu tablo olarak göster (daha görsel ve renkli)
+$users | ForEach-Object {
+    $user = $_.Properties
+    $name = $user["name"][0]
+    $created = $user["whenCreated"][0]
+    
+    [PSCustomObject]@{
+        Name = $name
+        Created = $created
+    }
+} | Format-Table -AutoSize -Property @{Label="Name"; Expression={$_.Name}; Align="left"; Width=20}, @{Label="Created"; Expression={$_.Created}; Align="left"; Width=20; FormatString="{0:MM/dd/yyyy HH:mm:ss}"}
+-----------------------------------
+Domaindeki Toplam Pc sayısını veren Script
+# Domaindeki toplam bilgisayar sayisini al
+$totalComputers = (Get-ADComputer -Filter *).Count
+
+# Sonucu ekrana yazdir
+Write-Host "$totalComputers"
+-----------------------------------------
+Domaindeki total user sayısını veren script
+# Domain adini degiskene atayalim
+$domainName = "ahmetkorkmaz.local"
+
+# Domain'e baglanalim
+$domain = New-Object System.DirectoryServices.DirectoryEntry("LDAP://$domainName")
+$searcher = New-Object System.DirectoryServices.DirectorySearcher
+$searcher.SearchRoot = $domain
+$searcher.Filter = "(&(objectCategory=User))"
+$searcher.PageSize = 1000 # Sayfa boyutunu artirabilirsiniz
+
+# Kullanicilari arayalim ve sayisini bulalim
+$users = $searcher.FindAll()
+$userCount = $users.Count
+
+# Sonucu basit bir sayi olarak döndürelim
+Write-Output $userCount
+---------THE END--------- :)
